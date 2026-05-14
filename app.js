@@ -597,18 +597,41 @@ function hideErrorBanner() {
 
 // ── URL params + settings ─────────────────────────────────────
 
+// URLs that block browsers — automatically replace with the working default
+const BLOCKED_RPC_HOSTS = ["api.mainnet-beta.solana.com", "api.devnet.solana.com"];
+
+function isBlockedRpc(url) {
+  if (!url) return false;
+  return BLOCKED_RPC_HOSTS.some(host => url.includes(host));
+}
+
 function loadSettings() {
   const params = new URLSearchParams(location.search);
-  let stored = localStorage.getItem("dash.rpc") || "";
-  // Migrate users who had the broken default cached
-  if (stored === "https://api.mainnet-beta.solana.com") {
-    stored = "";
+
+  // Pull from URL → localStorage → default, in that order
+  let rpc = params.get("rpc") || localStorage.getItem("dash.rpc") || "";
+
+  // Force-replace any blocked endpoint
+  if (isBlockedRpc(rpc)) {
+    console.warn("[dash] migrating blocked RPC", rpc, "→", DEFAULT_RPC);
+    rpc = "";
     localStorage.removeItem("dash.rpc");
   }
-  state.wallet  = params.get("wallet") || localStorage.getItem("dash.wallet") || DEFAULT_WALLET;
-  state.rpcUrl  = params.get("rpc")    || stored                              || DEFAULT_RPC;
+  if (!rpc) rpc = DEFAULT_RPC;
+
+  state.wallet = params.get("wallet") || localStorage.getItem("dash.wallet") || DEFAULT_WALLET;
+  state.rpcUrl = rpc;
+
   document.getElementById("wallet").value = state.wallet;
   document.getElementById("rpc").value    = state.rpcUrl;
+
+  // Update URL to reflect the (possibly migrated) settings
+  const newUrl = new URL(location.href);
+  if (state.wallet !== DEFAULT_WALLET) newUrl.searchParams.set("wallet", state.wallet);
+  else newUrl.searchParams.delete("wallet");
+  if (state.rpcUrl !== DEFAULT_RPC) newUrl.searchParams.set("rpc", state.rpcUrl);
+  else newUrl.searchParams.delete("rpc");
+  history.replaceState({}, "", newUrl);
 }
 
 function saveSettings() {
