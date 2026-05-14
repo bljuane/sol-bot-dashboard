@@ -1,0 +1,41 @@
+name: Daily summary
+
+on:
+  schedule:
+    # 00:05 UTC — gives ~5 min of grace after midnight
+    - cron: '5 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: notify-daily
+  cancel-in-progress: false
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r notify/requirements.txt
+      - env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHANNEL_ID: ${{ secrets.TG_CHANNEL_ID }}
+          BOT_WALLET: ${{ vars.BOT_WALLET || '5YDHipThEddE5jr7AcRkcdkUofeiqWBukSwLgZcmFjSP' }}
+          RPC_URL: ${{ vars.RPC_URL || 'https://solana-rpc.publicnode.com' }}
+          DAILY_WINDOW_HOURS: '24'
+        run: python notify/daily.py
+      - name: Commit state if changed
+        run: |
+          if [[ -n "$(git status --porcelain notify/state.json)" ]]; then
+            git config user.name 'github-actions[bot]'
+            git config user.email 'github-actions[bot]@users.noreply.github.com'
+            git add notify/state.json
+            git commit -m "chore(notify): daily state [skip ci]"
+            git push
+          fi
