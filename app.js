@@ -6,7 +6,7 @@
 // ── Configuration ─────────────────────────────────────────────
 
 const DEFAULT_WALLET = "5YDHipThEddE5jr7AcRkcdkUofeiqWBukSwLgZcmFjSP";
-const DEFAULT_RPC    = "https://api.mainnet-beta.solana.com";
+const DEFAULT_RPC    = "https://solana-rpc.publicnode.com";
 const REFRESH_INTERVAL_MS = 30_000;
 const MAX_SIGS_TO_FETCH = 1000;
 const PUMP_PROGRAM = "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P";
@@ -103,12 +103,25 @@ function base58DiscriminatorHex(b58) {
 
 let rpcId = 0;
 async function rpc(method, params) {
-  const res = await fetch(state.rpcUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ jsonrpc: "2.0", id: ++rpcId, method, params }),
-  });
-  if (!res.ok) throw new Error(`RPC ${method} HTTP ${res.status}`);
+  let res;
+  try {
+    res = await fetch(state.rpcUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ jsonrpc: "2.0", id: ++rpcId, method, params }),
+    });
+  } catch (err) {
+    throw new Error(`RPC unreachable (${err.message}). Try a different RPC URL — the default public Solana RPC blocks browser requests. Recommended: https://solana-rpc.publicnode.com`);
+  }
+  if (!res.ok) {
+    if (res.status === 403) {
+      throw new Error(`RPC ${method} returned 403 Forbidden — this endpoint blocks browsers. Switch to https://solana-rpc.publicnode.com or supply your own Helius/Triton URL in the RPC box above.`);
+    }
+    if (res.status === 429) {
+      throw new Error(`RPC ${method} rate-limited (429). Supply your own dedicated RPC URL for smoother operation.`);
+    }
+    throw new Error(`RPC ${method} HTTP ${res.status}`);
+  }
   const j = await res.json();
   if (j.error) throw new Error(`RPC ${method} error: ${j.error.message ?? JSON.stringify(j.error)}`);
   return j.result;
@@ -555,19 +568,45 @@ function setStatus(state, msg) {
     el.innerHTML = `<span class="dot"></span>Sniper Bot Monitor <span class="dim" style="font-size:12px;margin-left:8px;">refreshing…</span>`;
   } else if (state === "error") {
     el.classList.add("offline");
-    el.innerHTML = `<span class="dot"></span>Sniper Bot Monitor <span class="red" style="font-size:12px;margin-left:8px;">error: ${msg||""}</span>`;
+    // truncate long error messages for the header; full message in the banner
+    const short = msg && msg.length > 60 ? msg.slice(0, 60) + "…" : (msg || "");
+    el.innerHTML = `<span class="dot"></span>Sniper Bot Monitor <span class="red" style="font-size:12px;margin-left:8px;" title="${(msg||'').replace(/"/g,'&quot;')}">error: ${short}</span>`;
+    showErrorBanner(msg);
   } else {
     el.classList.remove("offline");
     el.innerHTML = `<span class="dot"></span>Sniper Bot Monitor`;
+    hideErrorBanner();
   }
+}
+
+function showErrorBanner(msg) {
+  let b = document.getElementById("error-banner");
+  if (!b) {
+    b = document.createElement("div");
+    b.id = "error-banner";
+    b.style.cssText = "background:rgba(248,81,73,0.12);border:1px solid rgba(248,81,73,0.35);color:#f85149;padding:12px 16px;margin:0 24px 16px;border-radius:8px;font-size:13px;line-height:1.5;";
+    const main = document.querySelector("main");
+    main.insertBefore(b, main.firstChild);
+  }
+  b.innerHTML = `<strong>Couldn't reach RPC.</strong> ${msg || ""}`;
+}
+function hideErrorBanner() {
+  const b = document.getElementById("error-banner");
+  if (b) b.remove();
 }
 
 // ── URL params + settings ─────────────────────────────────────
 
 function loadSettings() {
   const params = new URLSearchParams(location.search);
+  let stored = localStorage.getItem("dash.rpc") || "";
+  // Migrate users who had the broken default cached
+  if (stored === "https://api.mainnet-beta.solana.com") {
+    stored = "";
+    localStorage.removeItem("dash.rpc");
+  }
   state.wallet  = params.get("wallet") || localStorage.getItem("dash.wallet") || DEFAULT_WALLET;
-  state.rpcUrl  = params.get("rpc")    || localStorage.getItem("dash.rpc")    || DEFAULT_RPC;
+  state.rpcUrl  = params.get("rpc")    || stored                              || DEFAULT_RPC;
   document.getElementById("wallet").value = state.wallet;
   document.getElementById("rpc").value    = state.rpcUrl;
 }
