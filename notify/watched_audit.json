@@ -1,44 +1,79 @@
 {
   "8YcbyX92UHTU23HZv3ccP9o13qibErQkKaUjoxqxd7SJ": {
     "role": "active creator",
-    "creates": 15,
-    "cadence": "0.7/hr in last 20.7h",
-    "last_utc": "05-14 16:51"
+    "total_creates": 252,
+    "v2_pct": 100.0,
+    "graduated": 0,
+    "sample_size": 20,
+    "graduation_rate": 0.0,
+    "alive_avg_sol": 0.013256894300000013,
+    "last_create": "05-14 16:18",
+    "last_create_ts": 1778775499
   },
   "HiSo5kykqDPs3EG14Fk9QY4B5RvkuEs8oJTiqPX3EDAn": {
     "role": "active creator",
-    "creates": 12,
-    "cadence": "6.5/hr in last 1.9h",
-    "last_utc": "05-14 11:51"
+    "total_creates": 163,
+    "v2_pct": 100.0,
+    "graduated": 0,
+    "sample_size": 20,
+    "graduation_rate": 0.0,
+    "alive_avg_sol": 0.003563681,
+    "last_create": "05-14 11:51",
+    "last_create_ts": 1778759473
   },
   "D9gQ6RhKEpnobPBUdWY5bPQt2p3zGk3iVz6ChpUi2ArA": {
     "role": "active creator",
-    "creates": 11,
-    "cadence": "1.3/hr in last 8.6h",
-    "last_utc": "05-14 14:49"
+    "total_creates": 165,
+    "v2_pct": 100.0,
+    "graduated": 0,
+    "sample_size": 20,
+    "graduation_rate": 0.0,
+    "alive_avg_sol": 0.46011457075000006,
+    "last_create": "05-14 14:49",
+    "last_create_ts": 1778770176
   },
   "7hbtZ1M99K49pc13HUf5KeV8D2t1kSiDzTTmKPFFw1T9": {
     "role": "Luis dev",
-    "creates": 8,
-    "cadence": "0.4/hr in last 22.1h",
-    "last_utc": "05-14 11:40"
+    "total_creates": 36,
+    "v2_pct": 100.0,
+    "graduated": 0,
+    "sample_size": 20,
+    "graduation_rate": 0.0,
+    "alive_avg_sol": 0.0023059723499999994,
+    "last_create": "05-14 11:40",
+    "last_create_ts": 1778758837
   },
   "5htGpHK2oV9g2BcDqLdRBqjCLdy8mc3fsESfR5DU73eM": {
     "role": "creator",
-    "creates": 3,
-    "cadence": "3.1/hr in last 1.0h",
-    "last_utc": "05-14 09:41"
+    "total_creates": 126,
+    "v2_pct": 100.0,
+    "graduated": 0,
+    "sample_size": 20,
+    "graduation_rate": 0.0,
+    "alive_avg_sol": 0.18877546335,
+    "last_create": "05-14 09:41",
+    "last_create_ts": 1778751692
   },
   "FM1YCKED2KaqB8Uat8aB1nsffR1vezr7s6FAEieXJgke": {
     "role": "creator (lighter)",
-    "creates": 5,
-    "cadence": "7.2/hr in last 0.7h",
-    "last_utc": "05-14 06:02"
+    "total_creates": 31,
+    "v2_pct": 100.0,
+    "graduated": 0,
+    "sample_size": 20,
+    "graduation_rate": 0.0,
+    "alive_avg_sol": 0.0833284893,
+    "last_create": "05-14 06:02",
+    "last_create_ts": 1778738566
   },
   "BiCQ7k6afuhQ9qjta32pxwaEWTTKYnF7unBVL3wg8aB8": {
-    "role": "creator (low-freq)",
-    "creates": 0,
-    "cadence": "no creates in 50 sigs",
-    "last_utc": "n/a"
+    "role": "creator (low-freq, burst)",
+    "total_creates": 50,
+    "v2_pct": 100.0,
+    "graduated": 0,
+    "sample_size": 20,
+    "graduation_rate": 0.0,
+    "alive_avg_sol": 0.2269167346,
+    "last_create": "05-14 14:17",
+    "last_create_ts": 1778768240
   }
 }

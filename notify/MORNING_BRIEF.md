@@ -74,25 +74,47 @@ You can also add the bot to a group/channel (must be admin in channels with "pos
 
 To force a specific target instead of auto-discovery, set GH Secret `TG_CHANNEL_ID`.
 
-### 3. Watched-wallet audit
+### 3. Watched-wallet audit — outcomes are bleak
 
-Ran an outcome / cadence audit on all 12 watched wallets. Full data saved to `notify/watched_audit.json`. Headline:
+Ran a **deep audit** on all 12 watched wallets (cadence + creation totals + graduation rates over full ~1000-sig history). Full data saved to `notify/watched_audit.json`.
 
-| Wallet | Role | Creates in last 50 sigs | Current cadence | Last create UTC |
-|---|---|---:|---|---|
-| `8YcbyX92…` | active | 15 | 0.7/hr over 20h | **16:51 today** ← just now |
-| `D9gQ6Rh…` | active | 11 | 1.3/hr over 8.6h | 14:49 |
-| `HiSo5kyk…` | active | 12 | 6.5/hr over 1.9h | 11:51 |
-| `7hbtZ1M9…` | Luis dev | 8 | 0.4/hr over 22h | 11:40 |
-| `FM1YCKED…` | creator | 5 | 7.2/hr over 0.7h | 06:02 |
-| `5htGpHK2…` | creator | 3 | 3.1/hr over 1h | 09:41 |
-| `BiCQ7k6a…` | low-freq | 0 | no creates in 50 sigs | yesterday |
-| `CyaE1Vxv…` | Cented7 (trader) | 0 | n/a — only trades | n/a |
-| `5ZuV8eqk…`, `A8Z1ejQG…`, `EYfdt8cN…`, `GZVSEAaj…` | unknown | 0 | no creates seen | n/a |
+**Volume / cadence per creator:**
+
+| Wallet | Total creates (recent ~1000 sigs) | V2 % | Most recent | Cadence |
+|---|---:|---:|---|---|
+| `8YcbyX92…` | **252** | 100% | 16:51 today | spray, high-volume |
+| `HiSo5kyk…` | 163 | 100% | 11:51 | bursts |
+| `D9gQ6Rh…` | 165 | 100% | 14:49 | steady |
+| `5htGpHK2…` | 126 | 100% | 09:41 | quieter |
+| `BiCQ7k6a…` | 50 | 100% | yesterday | low-freq bursts |
+| `7hbtZ1M9…` (Luis) | 36 | 100% | 11:40 | dev wallet |
+| `FM1YCKED…` | 31 | 100% | 06:02 | lighter |
+| `CyaE1Vxv…` (Cented7) | 0 (trader, not creator) | — | — | trades only |
+| `5ZuV8eqk…`, `A8Z1ejQG…`, `EYfdt8cN…`, `GZVSEAaj…` | 0 visible | — | — | quiet / unknown |
+
+**Two important takeaways:**
+
+**1. Every watched creator is 100% Token-2022 (V2).** Not a single V1 launch across 823 total creations spanning all 7 active creators. **The bot's V2 path is the entire game** — if it doesn't work for V2, the bot fires zero times on this watched set.
+
+**2. Graduation rate on these creators is essentially zero.** Of the 20 most-recent mints sampled per creator (140 mints total), **zero have graduated**. Per-creator outcomes (alive on curve, avg real_sol_reserves):
+
+| Wallet | 20 sample mints alive | Avg real_sol_reserves |
+|---|---:|---:|
+| `D9gQ6Rh…` | 20/20 still on curve | **0.46 SOL** ← best |
+| `BiCQ7k6a…` | 20/20 | 0.23 SOL |
+| `5htGpHK2…` | 20/20 | 0.19 SOL |
+| `FM1YCKED…` | 20/20 | 0.08 SOL |
+| `8YcbyX92…` | 20/20 | **0.01 SOL** ← duds |
+| `HiSo5kyk…` | 20/20 | 0.00 SOL ← duds |
+| `7hbtZ1M9…` (Luis) | 20/20 | 0.00 SOL |
+
+`D9gQ6Rh` is the only wallet whose mints accumulate meaningful (~0.5 SOL avg) buy interest. `8YcbyX92` and `HiSo5kyk` are spray-launchers — high volume but tokens die on curve immediately. This is consistent with typical pump.fun behavior (median token dies <1 SOL real reserves) and means the bot's per-trade ROI from this watched list will be modest unless the bot's exit logic (quick-dump on 1-5 buyers, ladder on alone/hot) genuinely captures the right side of each launch.
 
 **Recommendations:**
-- The 4 silent wallets (5ZuV8eqk, A8Z1ejQG, EYfdt8cN, GZVSEAaj) and Cented7 are wasted slots — they won't trigger the bot. Consider trimming.
-- The 7 active creators are real volume sources. `8YcbyX92`, `HiSo5kyk`, `D9gQ6Rh` are the heavy hitters.
+- **Trim the 5 silent slots** — Cented7, 5ZuV8eqk, A8Z1ejQG, EYfdt8cN, GZVSEAaj never trigger the bot. Remove them from `WATCHED_WALLETS` repo variable.
+- **Prioritize `D9gQ6Rh`** — best historical outcomes. Consider weighting / boosting tier on this creator if Franklin's bot supports per-creator overrides.
+- **De-prioritize `8YcbyX92` / `HiSo5kyk`** for testing — they launch a lot but the tokens die. Use them for "is the bot firing" verification, not for expecting real PnL.
+- **Expected reality:** at this watched set's quality, the bot's strategy needs to be defensive — quick-dump fast on weak fields, only ride alone-cases. The momentum ladder + extension logic in BUILD_SPEC_V2 §4 is critical, not optional.
 
 ---
 
