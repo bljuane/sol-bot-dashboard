@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sniper Bot — PnL & Activity</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0e14;
+    --bg-panel: #121821;
+    --bg-panel-2: #1a212d;
+    --border: #232c3a;
+    --text: #e6edf3;
+    --text-dim: #8b97a8;
+    --text-dimmer: #5a6776;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --yellow: #d29922;
+    --purple: #a371f7;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  header {
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .brand { font-size: 18px; font-weight: 600; }
+  .brand .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-right: 8px; }
+  .brand.offline .dot { background: var(--red); }
+  .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .controls input {
+    background: var(--bg-panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    width: 220px;
+  }
+  .controls button {
+    background: var(--accent);
+    border: 0;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .controls button:hover { filter: brightness(1.1); }
+  .controls button.secondary { background: var(--bg-panel-2); border: 1px solid var(--border); color: var(--text); }
+  .last-refresh { color: var(--text-dim); font-size: 12px; font-family: ui-monospace, monospace; }
+
+  main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .kpi {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .kpi-label { color: var(--text-dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .kpi-value { font-size: 22px; font-weight: 600; font-family: ui-monospace, "SF Mono", monospace; }
+  .kpi-value.green { color: var(--green); }
+  .kpi-value.red   { color: var(--red); }
+  .kpi-sub { color: var(--text-dim); font-size: 11px; margin-top: 4px; font-family: ui-monospace, monospace; }
+
+  .row {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .row.split-2 { grid-template-columns: 2fr 1fr; }
+  @media (max-width: 900px) { .row.split-2 { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .panel h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    margin: 0;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel h2 .count { color: var(--text-dimmer); font-size: 11px; }
+  .panel-body { padding: 12px 16px; }
+  .panel-body.no-padding { padding: 0; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  table th {
+    text-align: left;
+    color: var(--text-dim);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-panel-2);
+  }
+  table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-family: ui-monospace, "SF Mono", monospace;
+    font-size: 12.5px;
+  }
+  table tr:last-child td { border-bottom: 0; }
+  table tr:hover { background: var(--bg-panel-2); }
+  table td.right { text-align: right; }
+  td .sig {
+    color: var(--text-dim);
+    font-size: 11px;
+    margin-top: 2px;
+  }
+  td .mint { display: inline-block; max-width: 130px; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; white-space: nowrap; }
+  .badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .badge.buy  { background: rgba(63, 185, 80, 0.15);  color: var(--green); }
+  .badge.sell { background: rgba(248, 81, 73, 0.15);  color: var(--red); }
+  .badge.fail { background: rgba(210, 153, 34, 0.15); color: var(--yellow); }
+  .badge.v1   { background: rgba(91, 109, 142, 0.2);  color: var(--text-dim); }
+  .badge.v2   { background: rgba(163, 113, 247, 0.15); color: var(--purple); }
+  .badge.open { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
+  .green { color: var(--green); }
+  .red   { color: var(--red); }
+  .dim   { color: var(--text-dim); }
+  .mono  { font-family: ui-monospace, monospace; }
+  .empty-state { padding: 36px 24px; text-align: center; color: var(--text-dim); }
+
+  .chart-container {
+    position: relative;
+    height: 240px;
+    padding: 12px 16px 16px 16px;
+  }
+  .scroll {
+    max-height: 480px;
+    overflow-y: auto;
+  }
+  .scroll::-webkit-scrollbar { width: 8px; }
+  .scroll::-webkit-scrollbar-track { background: var(--bg-panel); }
+  .scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .footnote { color: var(--text-dimmer); font-size: 11px; text-align: center; margin-top: 32px; padding-bottom: 16px; }
+  .footnote a { color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand" id="status-indicator"><span class="dot"></span>Sniper Bot Monitor</div>
+  <div class="controls">
+    <input id="wallet" type="text" placeholder="Wallet address" />
+    <input id="rpc" type="text" placeholder="RPC URL (optional)" />
+    <button id="refresh">Refresh now</button>
+    <button id="settings" class="secondary" title="Save settings to URL">Save</button>
+    <span class="last-refresh" id="last-refresh"></span>
+  </div>
+</header>
+
+<main>
+
+  <!-- KPI row -->
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Wallet balance</div>
+      <div class="kpi-value mono" id="kpi-balance">— SOL</div>
+      <div class="kpi-sub" id="kpi-balance-sub">$—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Realized PnL</div>
+      <div class="kpi-value mono" id="kpi-pnl">— SOL</div>
+      <div class="kpi-sub" id="kpi-pnl-sub">across — closed trades</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Win rate</div>
+      <div class="kpi-value mono" id="kpi-wr">—%</div>
+      <div class="kpi-sub" id="kpi-wr-sub">— winners / — losers</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Avg PnL / trade</div>
+      <div class="kpi-value mono" id="kpi-avg">— SOL</div>
+      <div class="kpi-sub">closed trades only</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Open positions</div>
+      <div class="kpi-value mono" id="kpi-open">—</div>
+      <div class="kpi-sub" id="kpi-open-sub">— SOL deployed</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Total trades</div>
+      <div class="kpi-value mono" id="kpi-trades">—</div>
+      <div class="kpi-sub" id="kpi-trades-sub">— buys / — sells</div>
+    </div>
+  </div>
+
+  <!-- Chart + Open positions -->
+  <div class="row split-2">
+    <div class="panel">
+      <h2>Cumulative PnL <span class="count" id="chart-range"></span></h2>
+      <div class="chart-container"><canvas id="pnl-chart"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>Open positions <span class="count" id="open-count"></span></h2>
+      <div class="panel-body no-padding scroll">
+        <table id="open-table">
+          <thead><tr>
+            <th>Mint</th>
+            <th class="right">Entry SOL</th>
+            <th class="right">Tokens held</th>
+            <th class="right">Age</th>
+          </tr></thead>
+          <tbody><tr><td colspan="4" class="empty-state">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent trades -->
+  <div class="panel">
+    <h2>Recent trades <span class="count" id="trades-count"></span></h2>
+    <div class="panel-body no-padding scroll">
+      <table id="trades-table">
+        <thead><tr>
+          <th>Time</th>
+          <th>Type</th>
+          <th>Mint</th>
+          <th class="right">SOL Δ</th>
+          <th class="right">Slot</th>
+          <th>Tx</th>
+        </tr></thead>
+        <tbody><tr><td colspan="6" class="empty-state">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footnote">
+    Static dashboard, runs entirely client-side. No backend, no API keys stored. Configure RPC + wallet via the controls above (or via URL params <code>?wallet=…&rpc=…</code>).
+    Source: <a href="https://github.com/bljuane/sol-bot-dashboard" target="_blank">github.com/bljuane/sol-bot-dashboard</a>
+  </div>
+
+</main>
+
+<script src="app.js" defer></script>
+</body>
+</html>
