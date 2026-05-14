@@ -35,8 +35,9 @@ let state = {
   rpcUrl:  "",
   trades:  [],        // [{ sig, slot, time, type, mint, solDelta, isV2, err }]
   balance: 0,         // SOL
-  positions: new Map(),  // mint -> { mint, totalIn, totalOut, tokensRemaining, lastBuySlot, lastBuyTime }
-  closed: [],         // [{ mint, totalIn, totalOut, pnl, openedAt, closedAt }]
+  positions: new Map(),  // mint -> { mint, totalSpent, lastBuyTs, lastBuySlot, tokenBalance }
+  closed: [],         // [{ mint, spent, received, pnl, firstBuyTs, lastTs, buys, sells }]
+  tokenBalances: new Map(),  // mint -> on-chain ui amount
   loading: false,
   chart: null,
 };
@@ -227,6 +228,28 @@ async function refresh() {
     const balanceResult = await rpc("getBalance", [state.wallet]);
     state.balance = (balanceResult?.value ?? 0) / LAMPORTS_PER_SOL;
 
+    // 2b. Current on-chain token balances — needed for accurate open-position detection
+    //     Trojan/BullX multi-ix txs can buy AND sell in the same tx; the parser sees only
+    //     the buy. The ONLY way to know if the wallet still holds the token is to ask chain.
+    try {
+      const [v1Accts, v2Accts] = await Promise.all([
+        rpc("getTokenAccountsByOwner", [state.wallet, { programId: TOKEN_PROGRAM_V1 }, { encoding: "jsonParsed" }]),
+        rpc("getTokenAccountsByOwner", [state.wallet, { programId: TOKEN_PROGRAM_V2 }, { encoding: "jsonParsed" }]),
+      ]);
+      state.tokenBalances = new Map();
+      for (const accts of [v1Accts?.value || [], v2Accts?.value || []]) {
+        for (const a of accts) {
+          const info = a.account?.data?.parsed?.info;
+          const mint = info?.mint;
+          const amt = info?.tokenAmount?.uiAmount || 0;
+          if (mint && amt > 0) state.tokenBalances.set(mint, amt);
+        }
+      }
+    } catch (err) {
+      log("token balance fetch failed:", err.message);
+      state.tokenBalances = new Map();
+    }
+
     // 3. Recent signatures (paginate up to MAX_SIGS_TO_FETCH)
     let sigs = [];
     let before = null;
@@ -310,7 +333,7 @@ async function fetchSolPrice() {
 // ── PnL computation ───────────────────────────────────────────
 
 function recomputePnl() {
-  // Group trades by mint, chronological, FIFO match buys against sells
+  // Group trades by mint
   const byMint = new Map();
   for (const t of state.trades) {
     if (t.err) continue;
@@ -323,21 +346,19 @@ function recomputePnl() {
 
   for (const [mint, trades] of byMint.entries()) {
     trades.sort((a, b) => a.time - b.time);
-    // Maintain running "open lots": buys queue, sell consumes proportionally
-    let totalSpent  = 0; // SOL spent (positive number) on this mint
-    let totalReceived = 0; // SOL received from selling this mint
+
+    let totalSpent = 0;
+    let totalReceived = 0;
     let firstBuyTs = null;
     let lastBuyTs  = null;
     let lastBuySlot = null;
-    let buys  = 0;
-    let sells = 0;
+    let buys = 0, sells = 0;
 
     for (const t of trades) {
       if (t.type === "buy") {
         if (!firstBuyTs) firstBuyTs = t.time;
-        lastBuyTs   = t.time;
+        lastBuyTs = t.time;
         lastBuySlot = t.slot;
-        // solDelta is negative (we spent SOL)
         totalSpent += Math.max(0, -t.solDelta);
         buys++;
       } else if (t.type === "sell") {
@@ -346,38 +367,30 @@ function recomputePnl() {
       }
     }
 
-    const netPnl = totalReceived - totalSpent;
-    const hasOpen = sells === 0 || totalSpent > totalReceived * 1.1; // crude open-position heuristic
+    // The CORRECT open/closed classifier: does the wallet still hold any tokens of this mint?
+    // This is the ONLY way to handle multi-ix Trojan/BullX txs where buy+sell happen in one tx
+    // (parser sees the buy, misses the embedded sell). On-chain balance is ground truth.
+    const onChainBalance = state.tokenBalances.get(mint) || 0;
+    const isOpen = onChainBalance > 0;
 
-    // Closed-trade tracking — for simplicity, treat the mint as "closed" if at least one sell occurred
-    // and either there are no buys after the last sell, or running balance is approximately matched.
-    if (sells > 0 && buys > 0) {
-      state.closed.push({
-        mint,
-        spent: totalSpent,
-        received: totalReceived,
-        pnl: netPnl,
-        firstBuyTs,
-        lastTs: trades[trades.length - 1].time,
-        buys, sells,
-      });
-    } else if (buys > 0 && sells === 0) {
-      // pure open
+    if (isOpen) {
+      // Real open position — wallet still holds tokens of this mint
       state.positions.set(mint, {
         mint,
         totalSpent,
         totalReceived,
         buys, sells,
         firstBuyTs, lastBuyTs, lastBuySlot,
+        tokenBalance: onChainBalance,
       });
-    } else if (sells > 0 && buys === 0) {
-      // sells only (we already held the token from before our tx window)
+    } else if (buys > 0 || sells > 0) {
+      // Closed — wallet holds no tokens of this mint, PnL is realized
       state.closed.push({
         mint,
-        spent: 0,
+        spent: totalSpent,
         received: totalReceived,
-        pnl: totalReceived,
-        firstBuyTs: null,
+        pnl: totalReceived - totalSpent,
+        firstBuyTs: firstBuyTs || (trades[0] && trades[0].time),
         lastTs: trades[trades.length - 1].time,
         buys, sells,
       });
@@ -546,11 +559,16 @@ function renderOpenTable() {
     const mintShort = p.mint !== "?" ?
       `<a href="https://pump.fun/${p.mint}" target="_blank" title="${p.mint}">${p.mint.slice(0, 8)}…${p.mint.slice(-4)}</a>` :
       `<span class="dim">unknown</span>`;
+    const tokFmt = p.tokenBalance >= 1000000 ?
+      (p.tokenBalance / 1000000).toFixed(2) + "M" :
+      p.tokenBalance >= 1000 ?
+      (p.tokenBalance / 1000).toFixed(1) + "K" :
+      p.tokenBalance.toFixed(2);
     return `
       <tr>
         <td>${mintShort}</td>
         <td class="right">${p.totalSpent.toFixed(4)} SOL</td>
-        <td class="right dim">— (rpc lookup pending)</td>
+        <td class="right">${tokFmt}</td>
         <td class="right dim">${fmtAge(p.lastBuyTs)}</td>
       </tr>`;
   }).join("");
