@@ -2,7 +2,8 @@
 
 Static client-side dashboard for monitoring a Solana pump.fun sniper-bot wallet's PnL and trade activity. Runs entirely in the browser — no backend, no API keys stored anywhere.
 
-**Live dashboard:** [https://bljuane.github.io/sol-bot-dashboard/](https://bljuane.github.io/sol-bot-dashboard/)
+- **Live dashboard:** [https://bljuane.github.io/sol-bot-dashboard/](https://bljuane.github.io/sol-bot-dashboard/)
+- **Telegram bot:** [@solbotboybot](https://t.me/solbotboybot) — pushes trades, watched-wallet launches, daily summaries, and health alerts. See [`notify/README.md`](notify/README.md) for setup (DM the bot once, then auto-configures within 5min).
 
 ## What it shows
 

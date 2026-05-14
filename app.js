@@ -35,9 +35,10 @@ let state = {
   rpcUrl:  "",
   trades:  [],        // [{ sig, slot, time, type, mint, solDelta, isV2, err }]
   balance: 0,         // SOL
-  positions: new Map(),  // mint -> { mint, totalSpent, lastBuyTs, lastBuySlot, tokenBalance }
+  positions: new Map(),  // mint -> { mint, totalSpent, lastBuyTs, lastBuySlot, tokenBalance, mtmSol }
   closed: [],         // [{ mint, spent, received, pnl, firstBuyTs, lastTs, buys, sells }]
   tokenBalances: new Map(),  // mint -> on-chain ui amount
+  curvePrices: new Map(),    // mint -> { virtualSol, virtualTok, complete, fetchedAt }
   loading: false,
   chart: null,
 };
@@ -144,7 +145,7 @@ async function rpcBatch(reqs) {
 // ── Trade extraction ──────────────────────────────────────────
 
 function parseTxForPumpTrade(tx, walletAddr) {
-  // Returns { type: "buy"|"sell"|null, mint, solDelta, isV2 }
+  // Returns { type: "buy"|"sell"|null, mint, bondingCurve, solDelta, isV2 }
   if (!tx || !tx.meta || tx.meta.err) {
     return { failed: !!(tx && tx.meta && tx.meta.err), type: null };
   }
@@ -160,14 +161,12 @@ function parseTxForPumpTrade(tx, walletAddr) {
 
   const pre  = tx.meta.preBalances[walletIdx] ?? 0;
   const post = tx.meta.postBalances[walletIdx] ?? 0;
-  const fee  = tx.meta.fee ?? 0;
-  // SOL delta net of fee (so a buy of 1 SOL with 0.005 fee = -1.0 SOL)
-  const solDeltaLamports = post - pre; // negative = spent, positive = received
+  const solDeltaLamports = post - pre;
   const solDelta = solDeltaLamports / LAMPORTS_PER_SOL;
 
-  // Walk top-level instructions; identify pump.fun program + discriminator
   let foundType = null;
   let foundMint = null;
+  let foundBc = null;
   let isV2 = false;
   const ixs = msg.instructions || [];
 
@@ -185,32 +184,46 @@ function parseTxForPumpTrade(tx, walletAddr) {
 
     foundType = kind;
 
-    // Extract mint pubkey from the ix's account list
-    // V1 buy: mint at idx 2; V2 buy: mint at idx 1; sell: mint at idx 2 (V1) or 1 (V2)
     const acctIdxs = ix.accounts || [];
-    const candidates = isV2 ? [1, 2] : [2, 1];
-    for (const ai of candidates) {
-      if (ai < acctIdxs.length) {
-        const keyIdx = acctIdxs[ai];
-        if (keyIdx < allKeys.length) {
-          const addr = allKeys[keyIdx];
-          if (addr && addr.endsWith("pump")) { foundMint = addr; break; }
-        }
+    // Capture both mint AND bonding curve from the ix accounts.
+    // V1 buy: mint=2, bondingCurve=3
+    // V2 buy: mint=1, bondingCurve=10 (per the on-chain V2 layout)
+    // Sell:  mint=2, bondingCurve=3 (legacy); we'll grab whichever has a "pump" suffix for mint,
+    //        and the non-mint, non-known-program PDA-shaped key for bc.
+
+    // Find mint by "pump" suffix
+    for (const ai of acctIdxs) {
+      if (ai < allKeys.length && allKeys[ai].endsWith("pump")) {
+        foundMint = allKeys[ai];
+        break;
       }
     }
-    // Fallback: scan all ix accounts for "pump" suffix
-    if (!foundMint) {
-      for (const ai of acctIdxs) {
-        if (ai < allKeys.length && allKeys[ai].endsWith("pump")) {
-          foundMint = allKeys[ai];
-          break;
+    // Find bondingCurve: it's a PDA, not a known program, not the mint, not the user, not a token program.
+    // Heuristic: pick the first account that is writable AND owned by the pump.fun program.
+    // Simpler heuristic: the bondingCurve appears at position 3 in V1 layout, 10 in V2 layout.
+    if (foundMint) {
+      const candidatePositions = isV2 ? [10, 11, 3] : [3, 4, 2];
+      for (const pos of candidatePositions) {
+        if (pos < acctIdxs.length) {
+          const keyIdx = acctIdxs[pos];
+          if (keyIdx < allKeys.length) {
+            const addr = allKeys[keyIdx];
+            // bc PDA is not the mint, not a system program, not WSOL
+            if (addr !== foundMint &&
+                addr !== "11111111111111111111111111111111" &&
+                addr !== "So11111111111111111111111111111111111111112" &&
+                !addr.endsWith("pump")) {
+              foundBc = addr;
+              break;
+            }
+          }
         }
       }
     }
     break;
   }
 
-  return { type: foundType, mint: foundMint, solDelta, isV2 };
+  return { type: foundType, mint: foundMint, bondingCurve: foundBc, solDelta, isV2 };
 }
 
 // ── Main fetch ────────────────────────────────────────────────
@@ -287,14 +300,15 @@ async function refresh() {
       if (!parsed.type) continue;
 
       newTrades.push({
-        sig:      sig.signature,
-        slot:     sig.slot,
-        time:     sig.blockTime,
-        type:     parsed.type,
-        mint:     parsed.mint || "?",
-        solDelta: parsed.solDelta,
-        isV2:     parsed.isV2,
-        err:      !!sig.err,
+        sig:          sig.signature,
+        slot:         sig.slot,
+        time:         sig.blockTime,
+        type:         parsed.type,
+        mint:         parsed.mint || "?",
+        bondingCurve: parsed.bondingCurve || null,
+        solDelta:     parsed.solDelta,
+        isV2:         parsed.isV2,
+        err:          !!sig.err,
       });
     }
     log(`Parsed ${newTrades.length} new pump.fun trades`);
@@ -307,6 +321,10 @@ async function refresh() {
 
     // 7. Recompute positions + closed PnL (FIFO per mint)
     recomputePnl();
+
+    // 7b. For each open position, fetch the bonding curve state to compute mark-to-market
+    await fetchCurvePricesForOpenPositions();
+    computeMtmForOpenPositions();
 
     // 8. Render
     render();
@@ -328,6 +346,76 @@ async function fetchSolPrice() {
     const j = await r.json();
     if (j?.solana?.usd) SOL_PRICE_USD = j.solana.usd;
   } catch {}
+}
+
+// ── Bonding curve mark-to-market ──────────────────────────────
+
+// Pump.fun bonding_curve account layout (offsets in bytes):
+//   8  discriminator
+//   8  virtual_token_reserves   (u64 LE)
+//   16 virtual_sol_reserves     (u64 LE)
+//   24 real_token_reserves      (u64 LE)
+//   32 real_sol_reserves        (u64 LE)
+//   40 token_total_supply       (u64 LE)
+//   48 complete                 (bool — 1 = graduated)
+//
+// We avoid deriving the PDA client-side — instead we capture the bondingCurve
+// pubkey directly from each buy tx (the buy ix lists bondingCurve as one of
+// its accounts), then read its state via getAccountInfo when computing MTM.
+
+async function fetchCurvePricesForOpenPositions() {
+  const positions = [...state.positions.values()];
+  if (positions.length === 0) return;
+
+  for (const p of positions) {
+    if (!p.bondingCurve) {
+      console.warn("no bondingCurve for", p.mint, "(not captured from buy tx?)");
+      continue;
+    }
+
+    // skip if we have a fresh cache (<60s)
+    const cached = state.curvePrices.get(p.mint);
+    if (cached && Date.now() - cached.fetchedAt < 60_000) continue;
+
+    try {
+      const accInfo = await rpc("getAccountInfo", [p.bondingCurve, { encoding: "base64", commitment: "confirmed" }]);
+      const data = accInfo?.value?.data;
+      if (!data || !data[0]) {
+        // No bc account = graduated to Raydium
+        state.curvePrices.set(p.mint, { complete: true, fetchedAt: Date.now() });
+        continue;
+      }
+      const bytes = Uint8Array.from(atob(data[0]), c => c.charCodeAt(0));
+      // virtual_token_reserves at offset 8, virtual_sol_reserves at offset 16, complete at offset 48
+      const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+      const virtualTok = view.getBigUint64(8,  true);
+      const virtualSol = view.getBigUint64(16, true);
+      const complete = bytes[48] !== 0;
+      state.curvePrices.set(p.mint, {
+        virtualSol, virtualTok, complete,
+        fetchedAt: Date.now(),
+      });
+    } catch (e) {
+      console.warn("bc fetch failed for", p.mint, e.message);
+    }
+  }
+}
+
+function computeMtmForOpenPositions() {
+  for (const p of state.positions.values()) {
+    const curve = state.curvePrices.get(p.mint);
+    if (!curve || curve.complete || !curve.virtualSol || !curve.virtualTok) {
+      p.mtmSol = null;
+      continue;
+    }
+    // Sell-side simulation: how much SOL do we get out if we sold p.tokenBalance tokens now?
+    // pump.fun curve: out_sol = (vsol * tokenBalanceLamports) / (vtok + tokenBalanceLamports)
+    // tokenBalance is in human-readable units; pump tokens use 6 decimals.
+    const tokRaw = BigInt(Math.floor(p.tokenBalance * 1_000_000));
+    if (tokRaw <= 0n) { p.mtmSol = null; continue; }
+    const outLamports = (curve.virtualSol * tokRaw) / (curve.virtualTok + tokRaw);
+    p.mtmSol = Number(outLamports) / LAMPORTS_PER_SOL;
+  }
 }
 
 // ── PnL computation ───────────────────────────────────────────
@@ -374,9 +462,14 @@ function recomputePnl() {
     const isOpen = onChainBalance > 0;
 
     if (isOpen) {
+      // Capture the bondingCurve PDA from the most-recent buy tx for MTM lookups
+      const lastBuyTrade = [...trades].reverse().find(t => t.type === "buy" && t.bondingCurve);
+      const bondingCurve = lastBuyTrade ? lastBuyTrade.bondingCurve : null;
+
       // Real open position — wallet still holds tokens of this mint
       state.positions.set(mint, {
         mint,
+        bondingCurve,
         totalSpent,
         totalReceived,
         buys, sells,
@@ -551,7 +644,7 @@ function renderOpenTable() {
   const opens = [...state.positions.values()].sort((a, b) => b.lastBuyTs - a.lastBuyTs);
 
   if (opens.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="4" class="empty-state">No open positions</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No open positions</td></tr>`;
     return;
   }
 
@@ -564,11 +657,24 @@ function renderOpenTable() {
       p.tokenBalance >= 1000 ?
       (p.tokenBalance / 1000).toFixed(1) + "K" :
       p.tokenBalance.toFixed(2);
+    let markCell = `<span class="dim">—</span>`;
+    let unrealizedCell = `<span class="dim">—</span>`;
+    if (p.mtmSol !== null && p.mtmSol !== undefined) {
+      markCell = `${p.mtmSol.toFixed(4)} SOL<div class="sig dim">${tokFmt} tokens</div>`;
+      const unrealized = p.mtmSol - p.totalSpent;
+      const cls = unrealized > 0 ? "green" : (unrealized < 0 ? "red" : "");
+      const sign = unrealized > 0 ? "+" : "";
+      const pct = p.totalSpent > 0 ? ((unrealized / p.totalSpent) * 100).toFixed(1) : "—";
+      unrealizedCell = `<span class="${cls}">${sign}${unrealized.toFixed(4)} SOL</span><div class="sig dim">${sign}${pct}%</div>`;
+    } else {
+      markCell = `<span class="dim">${tokFmt} tokens</span>`;
+    }
     return `
       <tr>
         <td>${mintShort}</td>
         <td class="right">${p.totalSpent.toFixed(4)} SOL</td>
-        <td class="right">${tokFmt}</td>
+        <td class="right">${markCell}</td>
+        <td class="right">${unrealizedCell}</td>
         <td class="right dim">${fmtAge(p.lastBuyTs)}</td>
       </tr>`;
   }).join("");
