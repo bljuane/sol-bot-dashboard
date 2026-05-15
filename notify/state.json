@@ -5,6 +5,9 @@
   },
   "discovered_chat_id": "1114511869",
   "first_run_done": true,
+  "health": {
+    "alerted_misses": []
+  },
   "last_balance_sol": 0.727839314,
   "last_bot_sig": "45fvjELr2Rvct3dRNJcxG5YN2RWtembEiyUgsA9CiVvDi2Yt3QEySr8D8PzP3QTLNnuCMDjsz1Fxsq4cWS5YVJzc",
   "last_low_balance_alert": null,
