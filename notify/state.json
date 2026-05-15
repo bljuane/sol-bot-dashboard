@@ -1,4 +1,8 @@
 {
+  "canary": {
+    "last_creates_seen": 392,
+    "last_ts": 1778840011.0345733
+  },
   "discovered_chat_id": "1114511869",
   "first_run_done": true,
   "last_balance_sol": 0.727839314,
@@ -17,5 +21,8 @@
     "FM1YCKED2KaqB8Uat8aB1nsffR1vezr7s6FAEieXJgke": "uWnmY2EzBjdEhVTXqF1AmrDUq5U9AYEtg35TjSvTAWF4aneAdTkwM1DFwGGmf6LvbwYW3KAS6idZb5VbrWYHDxJ",
     "GZVSEAajExLJEvACHHQcujBw7nJq98GWUEZtood9LM9b": "2Zn9Et2vGT2Wx5DYMSDCD66Yco1neD6PNmtLoF1hnajh39HT8S3HRbkWbVPiDJN38H9zogZz3NrRSBSMTC9soAWc",
     "HiSo5kykqDPs3EG14Fk9QY4B5RvkuEs8oJTiqPX3EDAn": "3T2v43QZnGzcBbmvTZ85Vwn3Fe19PBr3ph2codmEAc3LUw2M2iyBE32XfwKeBx81fGWFZ3MefhyweHtGCc98kUbb"
+  },
+  "logs_watch": {
+    "last_seen_id": 956
   }
 }
