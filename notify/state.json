@@ -1,7 +1,7 @@
 {
   "canary": {
-    "last_creates_seen": 392,
-    "last_ts": 1778840011.0345733
+    "last_creates_seen": 352,
+    "last_ts": 1778840452.4561985
   },
   "discovered_chat_id": "1114511869",
   "first_run_done": true,
@@ -23,6 +23,6 @@
     "HiSo5kykqDPs3EG14Fk9QY4B5RvkuEs8oJTiqPX3EDAn": "3T2v43QZnGzcBbmvTZ85Vwn3Fe19PBr3ph2codmEAc3LUw2M2iyBE32XfwKeBx81fGWFZ3MefhyweHtGCc98kUbb"
   },
   "logs_watch": {
-    "last_seen_id": null
+    "last_seen_id": 960
   }
 }
