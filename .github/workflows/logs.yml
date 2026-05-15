@@ -1,0 +1,39 @@
+name: Bot log watcher
+
+on:
+  schedule:
+    - cron: '*/2 * * * *'   # every 2 min; logs evolve fast
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: notify-logs
+  cancel-in-progress: false
+
+jobs:
+  watch-logs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r notify/requirements.txt
+      - env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHANNEL_ID: ${{ secrets.TG_CHANNEL_ID }}
+          BOT_LOG_URL: ${{ vars.BOT_LOG_URL || 'http://195.201.21.198:3100' }}
+          RPC_URL: ${{ vars.RPC_URL || 'https://solana-rpc.publicnode.com' }}
+        run: python notify/logs_watch.py
+      - name: Commit state if changed
+        run: |
+          if [[ -n "$(git status --porcelain notify/state.json)" ]]; then
+            git config user.name 'github-actions[bot]'
+            git config user.email 'github-actions[bot]@users.noreply.github.com'
+            git add notify/state.json
+            git commit -m "chore(notify): logs-watch state [skip ci]"
+            git push
+          fi
