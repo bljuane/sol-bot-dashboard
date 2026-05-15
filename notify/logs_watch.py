@@ -349,36 +349,52 @@ def main():
     # Pull new log entries since last seen id
     log_state = state.setdefault("logs_watch", {})
     last_id = log_state.get("last_seen_id")
+    is_first_run = last_id is None
 
-    print(f"[logs-watch] last_seen_id={last_id}")
+    print(f"[logs-watch] last_seen_id={last_id} first_run={is_first_run}")
     new_entries = fetch_logs(since_id=last_id, limit=500)
     print(f"[logs-watch] {len(new_entries)} new log entries")
 
     if not new_entries:
-        # Still update canary on whatever's latest
         save_state(state)
         return 0
 
-    # Classify and push
-    pushed = 0
-    seen_categories = Counter()
-    most_recent_heartbeat = None
+    # On the first run, don't spam every interesting historical event —
+    # only process events from the last 10 minutes. Future runs cover ongoing.
+    if is_first_run:
+        cutoff_ms = (time.time() - 10 * 60) * 1000
+        new_entries_to_classify = [e for e in new_entries if e.get("timestamp", 0) >= cutoff_ms]
+        print(f"[logs-watch] first-run: filtered to last 10 min ({len(new_entries_to_classify)} entries)")
+    else:
+        new_entries_to_classify = new_entries
 
-    for entry in new_entries[:MAX_NEW_EVENTS_TO_PUSH * 3]:  # process more than we'll push
-        msg = entry.get("message", "")
-        # Track latest heartbeat for canary
-        hb = parse_heartbeat(msg)
+    # Always scan ALL entries for heartbeats (canary uses them)
+    most_recent_heartbeat = None
+    for entry in new_entries:
+        hb = parse_heartbeat(entry.get("message", ""))
         if hb:
             most_recent_heartbeat = hb
+
+    # Push newest-first so the cap retains the most recent events
+    pushed = 0
+    seen_categories = Counter()
+    for entry in sorted(new_entries_to_classify, key=lambda e: -e.get("timestamp", 0)):
+        msg = entry.get("message", "")
+        if parse_heartbeat(msg):
             continue
 
-        # Classify
         result = classify(entry)
         if not result: continue
         category, formatted = result
 
-        # Throttle some categories to prevent spam (cap per run)
-        cap = {"sim-fail": 5, "abandon": 5, "trigger": 10, "disconnect": 2, "warning": 5, "startup": 2}.get(category, 3)
+        cap = {
+            "sim-fail":   5,
+            "abandon":    5,
+            "trigger":   10,
+            "disconnect": 2,
+            "warning":    5,
+            "startup":    2,
+        }.get(category, 3)
         if seen_categories[category] >= cap:
             continue
         seen_categories[category] += 1
@@ -387,10 +403,10 @@ def main():
             pushed += 1
 
         if pushed >= MAX_NEW_EVENTS_TO_PUSH:
-            print(f"[logs-watch] capped at {MAX_NEW_EVENTS_TO_PUSH} pushes this run")
+            print(f"[logs-watch] capped at {MAX_NEW_EVENTS_TO_PUSH} pushes")
             break
 
-    # Update last_seen_id to the maximum id we processed
+    # Always advance last_seen_id (regardless of how many we pushed)
     max_id = max(e.get("id", 0) for e in new_entries)
     log_state["last_seen_id"] = max_id
 
