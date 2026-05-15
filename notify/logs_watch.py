@@ -92,14 +92,11 @@ def parse_heartbeat(msg: str) -> dict | None:
 
 def fetch_pumpfun_create_rate(rpc_url: str) -> float | None:
     """Sample pump.fun's recent program activity, return creates-per-minute."""
-    import base58
     try:
         rpc = Rpc(rpc_url)
         sigs = rpc.call("getSignaturesForAddress", [PUMP_PROGRAM, {"limit": 500}])
         if not sigs:
             return None
-        # Sample the first 50 sigs and count creates
-        from base64 import b64decode
         CREATE_DISC = "d6904cec5f8b31b4"
         creates_seen = 0
         oldest_bt = sigs[0].get("blockTime") or 0
@@ -123,7 +120,7 @@ def fetch_pumpfun_create_rate(rpc_url: str) -> float | None:
                 if pi is None or pi >= len(all_keys): continue
                 if all_keys[pi] != PUMP_PROGRAM: continue
                 try:
-                    data = base58.b58decode(ix.get("data", ""))
+                    data = b58decode(ix.get("data", ""))
                     if len(data) >= 8 and data[:8].hex() == CREATE_DISC:
                         creates_seen += 1
                         break
