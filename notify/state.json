@@ -1,6 +1,21 @@
 {
-  "last_bot_sig": null,
-  "last_watched_sigs": {},
-  "last_balance_sol": null,
-  "last_low_balance_alert": null
+  "discovered_chat_id": "1114511869",
+  "first_run_done": true,
+  "last_balance_sol": 0.727839314,
+  "last_bot_sig": "45fvjELr2Rvct3dRNJcxG5YN2RWtembEiyUgsA9CiVvDi2Yt3QEySr8D8PzP3QTLNnuCMDjsz1Fxsq4cWS5YVJzc",
+  "last_low_balance_alert": null,
+  "last_watched_sigs": {
+    "5ZuV8eqkvzYFVEKbLvGBdexL2tFv7E5BCd2HZpjqbdg": "2WQumBUxhgD3PEb4LhwLw27DaeS1MLfjH3UoumQjrWxS7ddmAAS8uQugtBkrnV6z2WVireYHt3XxzEaA2kYRDTZe",
+    "5htGpHK2oV9g2BcDqLdRBqjCLdy8mc3fsESfR5DU73eM": "2CLb8QhCbekCji5opRCcHhiCbCaq5442jaYdjZERmZrruW1CyZJg9qrjt8cnUfgzRnurBMw1SkpEMcsEFNWSDD7f",
+    "7hbtZ1M99K49pc13HUf5KeV8D2t1kSiDzTTmKPFFw1T9": "2T3wFTivHjnTFKo8pYAY2n9FQFihNecoNwXQfepYbDoFaxpEHUpBY42RdgS61HKzVdTisR8QaijGg2z81n5HG4aE",
+    "8YcbyX92UHTU23HZv3ccP9o13qibErQkKaUjoxqxd7SJ": "25Mwj4FWEvv4mPRJkesQStcZkshShSWrZLCWRxN3MNC4txwfzT5tEmbHut5hLiwpdsBVeiUJShBQrxp7X4AfbTZB",
+    "A8Z1ejQGk45EJibBPJviWnM3UvwKSuYun53nSCkWKM52": "2pJSXaUwBc7kcxiAiJZf1RgajrUATZFG4UAhvyX92ucLdxBDQnUfuWMwd26EoCd4k3QuBWxskBeuWUbaTs3LmHNt",
+    "BiCQ7k6afuhQ9qjta32pxwaEWTTKYnF7unBVL3wg8aB8": "3NBV4WRx8cAaeVH2CjbVJousAACPFBiNqyjK1NUCy5UZJovw2yffWEhQHB5BQw4zbN4FWnum5z6qrBZreANZmbix",
+    "CyaE1VxvBrahnPWkqm5VsdCvyS2QmNht2UFrKJHga54o": "2vbiSEBUvhY5mRXqNtMHUkxkLwquRxrCh79vXhnLyB9pzxHR25tkypbti4TSds5waECTHeEHvkgBNsH1Zr1AMD7C",
+    "D9gQ6RhKEpnobPBUdWY5bPQt2p3zGk3iVz6ChpUi2ArA": "2pStCXsGjLdLXew1zZ4xbzx2d9mxjssqZo3KDQzZh8BcRs3WyvvWe6VCxQd8HtJVH1zxRLaYdzJjF28YYoM5TRSg",
+    "EYfdt8cNFyyTEJKp18dcoVbgUHDnM1SK3bT2uKj9XXHc": "3rhkHwS8Ujga7GpeHKobpqhL7ijd48SZGAWz7ihNw4tYLkmYjAK1LwTeRGw5xv4zC34rH7tjun31TZk9wRGYNfPa",
+    "FM1YCKED2KaqB8Uat8aB1nsffR1vezr7s6FAEieXJgke": "uWnmY2EzBjdEhVTXqF1AmrDUq5U9AYEtg35TjSvTAWF4aneAdTkwM1DFwGGmf6LvbwYW3KAS6idZb5VbrWYHDxJ",
+    "GZVSEAajExLJEvACHHQcujBw7nJq98GWUEZtood9LM9b": "2Zn9Et2vGT2Wx5DYMSDCD66Yco1neD6PNmtLoF1hnajh39HT8S3HRbkWbVPiDJN38H9zogZz3NrRSBSMTC9soAWc",
+    "HiSo5kykqDPs3EG14Fk9QY4B5RvkuEs8oJTiqPX3EDAn": "3T2v43QZnGzcBbmvTZ85Vwn3Fe19PBr3ph2codmEAc3LUw2M2iyBE32XfwKeBx81fGWFZ3MefhyweHtGCc98kUbb"
+  }
 }
