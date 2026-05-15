@@ -6,7 +6,9 @@
   "discovered_chat_id": "1114511869",
   "first_run_done": true,
   "health": {
-    "alerted_misses": []
+    "alerted_misses": [
+      "tqqP4gedDPn6JHUTjkzWeGvuHvE4CBqrvfQWEcVwu6sgejmvqYkgRbhcZt3EsKfBdwfvsMHRtbmf86KsMfJuP9j"
+    ]
   },
   "last_balance_sol": 0.61453868,
   "last_bot_sig": "3jr8upoPFZb1kfuejY2TSC8z2sk39bLCcctGrcPPV2EXSj3yCdSCrn7qb7wwkNA3ZhLN1yQGRYmMLKyQoQULzmEp",
