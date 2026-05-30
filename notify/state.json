@@ -7,7 +7,6 @@
   "first_run_done": true,
   "health": {
     "alerted_misses": [
-      "2q97KJfDpkvfVZw7cBng3q7m2ujtan8j14yU3kpmyyBYSgMAgx9UxSQ4XjbSj2qhFA7eFohQ5YynVtvPgShKd6pu",
       "45irxs4H86mPxb8hJWFhHFt18DiYSniHMN6ReC278T14hAfr2gCZxuuGw6B3fPueKnWshfW1E7M7xaRR7AuQYgRH",
       "3UkDjazueosgjrJWXpZfoKPh6zDS87GdkERt5dTjjJec647YtfG55MRCvyfs1CkQvC6b5KN6wL5rJLFYVE3rtgPA",
       "4AmM4x5VKPi76iUJKAd8rzGfu4cTAyGiqaeT4JuRj1fsHy8dZ7dSshGzfVDoHn2EDVNkLPR2YZvkdr7Rcp1RKWFz",
@@ -206,9 +205,10 @@
       "3eJ5ujwpHm6f89ZoktB7bACr87pXZKSqKiMZXzJ3TFoh7iy6op343xpcEytqe7PX7Fbjw9PEHjRH5HcgsECCEN25",
       "5K8Yn2iDh5ggTsjk5yMgCMhqJyMLKe74mpJzWizcTKRx6QWAbMKsTVp4NNJtkFd8YhQVtkMKQga8fLAsDkfp6C2A",
       "4iTLXgwMq6yTz2o4SQWqwjNGNXhgTfTdn2RtbHw34VT1xHHPHCbnXxsHo7BGMbaw41uzmT7gVVmeF92NsZubpbwG",
-      "4zL6eJYpk3NV8KpQQQLs4XGpznDRzTqsqeGd9VJB5kLiLTJsrVD7qLNSk74Um3vuKkbpZHK3VfeN5ZSqBVv6oCuT"
+      "4zL6eJYpk3NV8KpQQQLs4XGpznDRzTqsqeGd9VJB5kLiLTJsrVD7qLNSk74Um3vuKkbpZHK3VfeN5ZSqBVv6oCuT",
+      "5JAT5u7JcDKB5sFzmrDA1vrtcfkH95AZmgSUsoFA5eLCAMX27H3MviKwzfD576FR4YMgeQkbN2MFMAk9AK7kQXyV"
     ],
-    "last_silence_alert": 1780029681.213129
+    "last_silence_alert": 1780108552.8306665
   },
   "last_balance_sol": 5.211806284,
   "last_bot_sig": "3QCJkZF7GdW8uuvFkwbWtjWkNjEQW7GQP6ewFtTMnRKXWavxNbPUtaK4746kbXULmDKRwrLQEorXB1W7EezQhv7c",
