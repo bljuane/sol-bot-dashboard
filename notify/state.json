@@ -7,10 +7,6 @@
   "first_run_done": true,
   "health": {
     "alerted_misses": [
-      "675a1XiTabCezoH9srq7MpkoddTAq4bvvtwRUKUrQnKX7mR4c6DRxq2RvoTLyvkHSfUBPMRaDzjNG8AWYXEa6WXq",
-      "3PViqGkWh3yewn4HjZivKeMHWDN4tGRMfzrqk4eYtT3mUvGkw13ADt6FfQbUUjbmKf1F8xTLBEGuPxmZCHtQnL7c",
-      "4cENNzG28ELz5txsXtxeAyAomMLvqDw9SYxn5Bvw1e6MYXperAB47RngPNBNCWaoPjMUu6x2bHw3bzSVTz1DV8av",
-      "3BMyPobVMWA7KZn5y3XH4CjGnzVxubCQbWjvkxxbJDEfJewF29sTa6BUubxbjLVEZgmcccMFwLXyr2Xa4Ke85b5c",
       "236PziPBjpNEkF6GS4tM4z5MyjiEzjx9SSRv9cRwGfhDFw6rFUE7wdREkU8QnhEjC8YLfxyJ2qgH6deQozpVq583",
       "48j2X9GRb2fRQQ2MAoE9su86h3SNcdHdK7LBKCitLEwp6VrWJTt5BE6DGR8nNbJNArYhMvHGNtitLeGy5fV6iNdz",
       "4xQa9W6Ji549YHVZqf9GWNMEz6whEyiESHSJBs9Jrpk5no57eTSFf37MT5K1Wnq9QdNQNB315jHrUqu3SUiQ7oQM",
@@ -206,9 +202,13 @@
       "5v21WXmNfdvcUGzhpxaqVchV4pHaMFrCByG6BpNYFDeUQuys1TGRK6aKLKfy1o2wxzbn9EfvmRFMcnCc6LBmBRbV",
       "4D34DzPcofxEGCc8De3GZoHxdGnUA83oZM7vA9QkYNh3y4Xsfowqs4D26XsQjRouZLr6Cf5F8iYvyKJv9QnoH6vQ",
       "hXrCLM8XDmTgAbdQrp5DC955L3pn11bauvztc46cFgQT4tEkbcJo6yAUna1XjXhR3K695XU8KHz8SQh1YHk7gF4",
-      "37zEDTqQxanYLXFN2V6WzKsDETrGTDhV27754Pt9DxSR6F8Rvfvs5ykeh3PFTZsXcK2RJzdzVH6XWHFKQDquWT1S"
+      "37zEDTqQxanYLXFN2V6WzKsDETrGTDhV27754Pt9DxSR6F8Rvfvs5ykeh3PFTZsXcK2RJzdzVH6XWHFKQDquWT1S",
+      "3WsvvqfdX5JdUUezKec6vRuoAxYJZ181eRTe35VecFTEXXLWhzrsYXDv876byNBt767boDaAeq1oT4ZfLCugXNUF",
+      "56dH5sMfhfzQSAZtScv1uprGkquQ6Ft6h2j742GdQrmRP5nuv7tBWWmerrg3WzQFZfaGsBUkvKxeo41uZHLowQ3Z",
+      "2a5AnDW1nepqdqEvcWSh4a1EEU75ukdSC8Q2mLbohEJA1sse5127aFRwxazEvgdcjfDYSmcoU6A2CeYFxJjJ2K6i",
+      "3Csn9rYkCmQqYqHDw2DEfkei9gZU6WvT4QSW4BHtsUFtepLYsrw5DzkrRBgf95TBEM4oHH4dzHgwGf9x5sYBUvXM"
     ],
-    "last_silence_alert": 1780812430.009689
+    "last_silence_alert": 1780887558.8470566
   },
   "last_balance_sol": 3.132738706,
   "last_bot_sig": "41bp8VkoHifYce4Vj369tsMdKqyrfyKGN48QUhhhntwyyhyLSc2i6UoisJZ67UHtZymRk1dyF7hZDeV44oFsGZnb",
