@@ -7,11 +7,6 @@
   "first_run_done": true,
   "health": {
     "alerted_misses": [
-      "2WCWxz3DQkde7gYz9h2PesMusuMuD5yR6s7V8SSiD5zAmMAqv5aDDKYAbctKv2ypzaWJaqdonNXvKCNz32HfLX6R",
-      "2RsYLXNJg5AFtN3yjBPdQpXczCH1oWj746moMtK6TY9H83gnm8F6mekks3dYcL1VByf8HXzCTmmVWGE6FNv1SCYo",
-      "3pz8ASNJ27iLDsbhZVRoodLs8Pr9UH19tVf6BKkvsF52kcSeRgSni73RyGgTyRbdp22Ck44qA5ND9wLzoabU9me4",
-      "2pDcuqLoD11V6KbHFB3QVUJeWg7JJykdeE2uVWginaNPoJayZmQMiZ5eCfWhY6Rf8ykxPQDH2GQ68ooad13PKVp8",
-      "31jmqZ4jmFdJfJ1BzZ6AGCt6BEKFHgeFB5PUXYVCYkYFKipcExL28vv31Fcew2jTXQwNJmVL348gVG72t8YEwPh8",
       "3eJ5ujwpHm6f89ZoktB7bACr87pXZKSqKiMZXzJ3TFoh7iy6op343xpcEytqe7PX7Fbjw9PEHjRH5HcgsECCEN25",
       "5K8Yn2iDh5ggTsjk5yMgCMhqJyMLKe74mpJzWizcTKRx6QWAbMKsTVp4NNJtkFd8YhQVtkMKQga8fLAsDkfp6C2A",
       "4iTLXgwMq6yTz2o4SQWqwjNGNXhgTfTdn2RtbHw34VT1xHHPHCbnXxsHo7BGMbaw41uzmT7gVVmeF92NsZubpbwG",
@@ -206,9 +201,14 @@
       "27uUdzPVVGhJBTqRakvzJTqnQbDxZv5xL5sngULwZdhRPv8aE4SmPYMbXkutV5aEtTspPjT3EbvAcvD9qdz3aJSE",
       "3NGNPStTfy72hnGSqE3Mi3DU9Dv1m3tRXUCnKryxM4LNnMVQT5owviGLTAoPErcKkfJkUMaHVothCoUNDyttp3di",
       "3nqo3SkVDzvJHCX75EN9ZByUNNc6BGJTFXhm2ioJGNfv9xtf9ADn17CxvnVav37s3CD24LXNQBXBGZjeLDmhJ6KM",
-      "rmbDyiecM8jBtSamFSaT3JBi1NVDc7R25WYdGEg1zEYC88vnLHv4P3HHfpzNWaCug6bDKrQmZ5XSEWdybXaiiaC"
+      "rmbDyiecM8jBtSamFSaT3JBi1NVDc7R25WYdGEg1zEYC88vnLHv4P3HHfpzNWaCug6bDKrQmZ5XSEWdybXaiiaC",
+      "61GFcuVhkSHiZPUvPX4QnbiEELk11PuLK1xeCvjQJaLExX69T2EgzNMySuFq9mQqzCk34wLXNJ63D5PPMMXdUMTZ",
+      "3aKN49h7XPvowdaSbZbBiS6im5ostNPp3ibGxZWKn5NAvawNsM6SK2pVy6d7zwFrSFNWwFDwyGjuHmvKvxc9ThD7",
+      "3rMVbe8kTV8FLavuCDYF6voZKG7T7FRaHCKCUz8WR6FzMqB1941JW7rPDjmsHAx9kRUmDMPc2vDF1W6nrZ3aWYUp",
+      "2vZ8quWgcqRW8qWP4whjQa5A8GSfCzAiVJV9ndKjHVkW6vSucjuU2cmAPJN6WN6nVGqP9XBpayFyFSqMNzb5jnDh",
+      "55QMeAtVhN4NYcnckLQ5a4eHKAUZJexJYoocDSDopnq5BFdDrEja1JRPZ3L4Ag7U1NcJehEjj5HCZJhcd4marSej"
     ],
-    "last_silence_alert": 1781245199.40354
+    "last_silence_alert": 1781326690.6406631
   },
   "last_balance_sol": 1.98337693,
   "last_bot_sig": "2GQAF96GgQG9daYzygHx4TYWi8xwN4KScgCA6ZmPmGywZ64tczTotao5LLhgZi1TZKo4VWgZnVNdNeBx8BB4qXg3",
