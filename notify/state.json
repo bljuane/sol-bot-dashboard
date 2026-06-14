@@ -7,8 +7,6 @@
   "first_run_done": true,
   "health": {
     "alerted_misses": [
-      "2RBn99VowXGQt51t6Was4q7EuvaGjn2Nfb1q6854uFKogH8o15V6aBSzpycpRHiTwB4zQGArveL8MuFXwBTEgokb",
-      "5AwnEYkcDrxJAwks2WitXgEGe4txid4FvjXCue6pwLMEaSJwMpMz6LESPdVG1KvAS166Siwp5u7M1G8QYX7NcsBn",
       "3MbyAysBE9LLzHvAS5dPKQ36nvBdBVqNfyshq8DYT3ZNG3VNy4NTZcBVwnJF1GsvBuievdq2XtnzLJM4yxN7ZG46",
       "2yLSKkc7A4pScMSP8gavnPQ6vPn9a3zGmVBBUx8Srhdan43M18hutiN2D16hBxRWPmpkU7Ay6dXwnZGSeihzFP2x",
       "iPh4oS8ywPXVBDNftMAoTopDbUFbuNU36xYH4LrQP6RfLMAGdJCfunmBcfdcMcu2ADsTKhL8JD7THYbktXSsU4p",
@@ -206,7 +204,9 @@
       "65dTbydRCFsvPugStyCyaDihG5fazFEweYWcQfeRZM1cbLuWnUvNfvovoR5FuzuU91WWsh2uEAN8SxYbtDnASv7T",
       "29GmyMSH3XMie6LPAnAqcYmqDd699dxdD8H55g3sXgxWxnHJ1smGt89KDzLwwWHghsqsio9ppjnJaFNE5eh5jsTD",
       "333wK1ALpKQx7vXsXVWavTqD8Y8yvcE6T94oiNcEWAeq8Ajp8TWEWpXFT6RaywQ3BUpCQC5LKTt3dbxV14seTxNh",
-      "35LivcEhR81dm2417vNu3Rt2N6csc9PaYkWi5XDLwZuCCmyAe14xJD2FgtkUPUXYkaHt5uL7nCTxckZquBzdW1Pk"
+      "35LivcEhR81dm2417vNu3Rt2N6csc9PaYkWi5XDLwZuCCmyAe14xJD2FgtkUPUXYkaHt5uL7nCTxckZquBzdW1Pk",
+      "5ZaZkKsEVyhKGmBJv3GQrhcqTeTxbzWVTJN1X95iDDpuN69C6Wv71tBrGTRebezrLVA1mnRktY4sJDo7yWo5DyP5",
+      "67gL18DMaVTUtXkAtt2x7hBGkV5AoEqVyCMuRkCxopqnCULeRXZiAx1dgt7HFoPaNM7THr6NcfwofqimnbWsxjZE"
     ],
     "last_silence_alert": 1781326690.6406631
   },
