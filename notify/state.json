@@ -7,11 +7,6 @@
   "first_run_done": true,
   "health": {
     "alerted_misses": [
-      "3phYigKWs3DHPTB7rMEkLzUPKXeEXe7k94yx8RyU9PS4d8fMEzdeeNbx8LyaZR4w7nnNGyvgjRRUiMRgYuC7carF",
-      "39KoiJinpmW97R2TvQyJReUGMnJSxxh9eKkGYTCWyApshSxnTAcXsUsuX5WjWDhLUzXw7wtsPC4zuWMyoJ5sQZA3",
-      "3ifrg6715hVfkxNiVYX4MeMiVJa8Z5j78qc4Eiq62KGafhqLm3mHLzqh5vPBv5FQMoaCYH9KACcGJCNdiTnJdu9Y",
-      "4ZbpMyVtRKYwN68c2yxQ82WgMoaBRPwvB8uHDofswV89jmsoQdPfv754U4KojZXm2wxeoNvhn4dYwiXbFTYx2QZK",
-      "5huiMWACK9nd3WmXtNsGPehjYun6vqePCrUMUuCzvAVKkEZWanAWVr6NWrPZyVyRDP8ZVHa125V9YoL3Jd5QVLVt",
       "3eUXtAcBYhkuzzZHDaZ6X26xwYdvwJ3X9hzovhiSWjAgFxoxkfi8dbbwMEu3R8kQSpZEzmbh4JYAwuMcCijQPb2m",
       "52M6oTfMNHimRasi4w1E4Ci1zHwGiUW7K96s74xNsXkCbqvoaGZZsGE8o4hEMqkdz7VRUhBggkqLyquZ3rNARh49",
       "4DcBBD7U8GNGKzZA8WUmYcAGitfAzwTc4VyvfsDCg8EmZsoiVzvMT7aDQ53cbmbVHSqRobYKRMvWrcNJuumocjdU",
@@ -206,9 +201,14 @@
       "4ToHev8ZmhEVrnVN87o4yRnRBuqXoZ6XFgXiNXts98UeHdSktxVnNCm6p4tsrqHWCGzHbgdzU3dMcMwBuoDY8TnX",
       "5XfMn384fqUggbExcicBJLMZn8jkkrsY2RQGzjpLawKBwh91WG21nAyw288K3tpX6vZzDMvda2mJBy2bPjimXhka",
       "3oTDgx8hNQdaMK5SvP5bkT77xV5LuiXbTDGUJTA2bhM11dW6fipSpNbf6Y1eZy55exDhkwy41RhQd7JATHk3Em4a",
-      "2H6bx3vmLUPF7MumGuevigzJhDiGkpPDuCm74WEWaGYEHvyLXfuDqr1dJdAnYAv3mZ9inxqx3Mcsha78QMJzXTmC"
+      "2H6bx3vmLUPF7MumGuevigzJhDiGkpPDuCm74WEWaGYEHvyLXfuDqr1dJdAnYAv3mZ9inxqx3Mcsha78QMJzXTmC",
+      "4kuyuPCFGtiC7Mo85r17kLHRprSLCav3YQvN2UPhKDfyk1DqKsa3qbgq2TbTopCGVsZQNJAMWgnBvgkVkygQRhBE",
+      "2NKgJnUdHFxFA8MDTwj22ehs58Mekpv7p9BBj9zLt3T8pjG4fZ1PtmaQ2SfcZKU8LA917wmj3MoK4uQYA9hKbCRT",
+      "66LAmyf2yvATwpsbd58Nj5EbJAjbPd5NCm9M9V4TVqrm6bJCJB1nvAjukx3bJnUGVRuSKo12A2ENZmiP9ti3PXkc",
+      "4GZtVNbfhck3ixzYfsCVRkTyzaRRFqXCgw9ViCuff2XAYwukNN8gTjTeYAxC9P3QBTifWFo5G6LHEXZyBTaTDXdC",
+      "a1UqJhW4tHoT1YswNDdxgZfUUKDcnPVR1x3FVoY53cc5XX4nx6atBRFJytm3GDeR7KMx1zdMrcN1jmtqXmpnheL"
     ],
-    "last_silence_alert": 1781326690.6406631
+    "last_silence_alert": 1781489162.377943
   },
   "last_balance_sol": 2.092308804,
   "last_bot_sig": "43JFf8ukdrnNSiauMo3DsWTvURLcPtFA8cPCA2qCzKY3pPFECjPcE93uwVh5f11gjpnQXVNy56rDHmJEzM7xZWUf",
